@@ -1,12 +1,6 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn import tree
-from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestClassifier
-import seaborn as sns
-from geopy.distance import geodesic
-import math
 
 ############################### Data reading ###############################
 
@@ -41,8 +35,21 @@ X = train_locs.copy()
 y = train_ids.copy()
 
 # To change
-X_test = test_locs[test_pos_inds[31529]]
-y_test = np.full(len(X_test),31529)
+df_loc = pd.DataFrame(test_locs, columns=["lat", "lon"])
+
+df_ids = (
+    pd.Series(test_pos_inds, name="idx")
+      .explode()
+      .rename_axis("id")
+      .reset_index()
+      .astype({"idx": int})
+)
+
+df_long = df_ids.merge(df_loc, left_on="idx", right_index=True)
+df_long = df_long.drop("idx", axis=1)
+
+X_test = df_long.drop("id", axis=1)
+y_test = df_long["id"]
 
 ############################### fit model ###############################
 
