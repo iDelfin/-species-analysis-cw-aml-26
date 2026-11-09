@@ -13,7 +13,8 @@ species = data['taxon_ids']      # list of species IDe. Note these do not necess
 species_names = dict(zip(data['taxon_ids'], data['taxon_names']))  # latin names of species 
 
 # loading test data 
-data_test = np.load('./Provided Code/species_test.npz', allow_pickle=True)test_locs = data_test['test_locs']    # 2D array, rows are number of datapoints 
+data_test = np.load('./Provided Code/species_test.npz', allow_pickle=True)
+test_locs = data_test['test_locs']    # 2D array, rows are number of datapoints 
                                       # and columns are "latitude" and "longitude"
 # data_test['test_pos_inds'] is a list of lists, where each list corresponds to 
 # the indices in test_locs where a given species is present, it can be assumed 
