@@ -79,11 +79,11 @@ y_train = data['present'].values
 species_train = data['species'].values
 
 # Save
-np.savez('species/preprocessed_data.npz', id=data['index'].values, X_train=X_train, y_train=y_train, species_train=species_train, class_id=data['class_id'].values, n_sightings=data['n_sightings'].values, cell_train=data['cell'].values, grid_latlon=grid, grid_cells=np.array(grid_cells), res=res, taxon_ids=train['taxon_ids'])
+np.savez('species/preprocessed_species.npz', id=data['index'].values, X_train=X_train, y_train=y_train, species_train=species_train, class_id=data['class_id'].values, n_sightings=data['n_sightings'].values, cell_train=data['cell'].values, grid_latlon=grid, grid_cells=np.array(grid_cells), res=res, taxon_ids=train['taxon_ids'])
 print('X_train-', X_train.shape, ', y_train-', y_train.shape)
 
 # Usage for models
-preprocessed = np.load('species/preprocessed_data.npz')
+preprocessed = np.load('species/preprocessed_species.npz')
 cols = ['sin_lon', 'cos_lon', 'sin_lat', 'cos_lat']
 train_df = pd.DataFrame(preprocessed['X_train'], columns=cols)
 train_df['id'] = preprocessed['id']
@@ -92,7 +92,7 @@ train_df['species'] = preprocessed['species_train']
 train_df['present'] = preprocessed['y_train']
 train_df['sightings'] = preprocessed['n_sightings']
 
-X = train_df[cols].values
-y = train_df['present'].values
+X = preprocessed['X_train']
+y = preprocessed['y_train']
 
 print(train_df.head())
