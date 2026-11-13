@@ -55,6 +55,19 @@ print('Pseudo-absences-', (data['present']==0).sum())
 species_index = {taxon: i for i, taxon in enumerate(train['taxon_ids'])}
 data['index'] = data['species'].map(species_index)
 
+# Taxonomy class for species
+taxonomy = pd.read_csv('species/species_taxonomy.csv')
+species_class = dict(zip(taxonomy['taxon_id'], taxonomy['class']))
+data['class'] = data['species'].map(species_class)
+
+# Number for each class 
+# {0: 'Amphibia', 1: 'Aves', 2: 'Crocodylia', 3: 'Mammalia', 4: 'Squamata', 5: 'Testudines'}
+class_names = sorted(taxonomy['class'].unique()) 
+class_index = {}
+for i, c in enumerate(class_names):
+    class_index[c] = i
+data['class_id'] = data['class'].map(class_index)
+
 # Features- normalise lat/lon to [-1,1], then sin/cos (SINR paper approach)
 def encode(latlon):
     lat = latlon[:,0]/90
@@ -66,7 +79,7 @@ y_train = data['present'].values
 species_train = data['species'].values
 
 # Save
-np.savez('species/preprocessed_data.npz', id=data['index'].values, X_train=X_train, y_train=y_train, species_train=species_train, n_sightings=data['n_sightings'].values, cell_train=data['cell'].values, grid_latlon=grid, grid_cells=np.array(grid_cells), res=res, taxon_ids=train['taxon_ids'])
+np.savez('species/preprocessed_data.npz', id=data['index'].values, X_train=X_train, y_train=y_train, species_train=species_train, class_id=data['class_id'].values, n_sightings=data['n_sightings'].values, cell_train=data['cell'].values, grid_latlon=grid, grid_cells=np.array(grid_cells), res=res, taxon_ids=train['taxon_ids'])
 print('X_train-', X_train.shape, ', y_train-', y_train.shape)
 
 # Usage for models
@@ -74,6 +87,7 @@ preprocessed = np.load('species/preprocessed_data.npz')
 cols = ['sin_lon', 'cos_lon', 'sin_lat', 'cos_lat']
 train_df = pd.DataFrame(preprocessed['X_train'], columns=cols)
 train_df['id'] = preprocessed['id']
+train_df['class_id'] = preprocessed['class_id']
 train_df['species'] = preprocessed['species_train']
 train_df['present'] = preprocessed['y_train']
 train_df['sightings'] = preprocessed['n_sightings']
