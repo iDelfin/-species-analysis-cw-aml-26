@@ -96,4 +96,12 @@ train_df['species'] = [np.flatnonzero(row) for row in preprocessed['y_train']] #
 X = preprocessed['X_train']
 y = preprocessed['y_train'].astype(np.float32) # for NN, 0/1 col for each grid cell for all 500 species
 
+# NaN 1=present, 0=absent, NaN=unknown 
+y_nan = y.copy()
+observed = preprocessed['n_species'] > 0 # sightings
+rows = y_nan[observed]
+rows[rows==0] = np.nan
+y_nan[observed] = rows
+print('present-', (y_nan == 1).sum(), 'absent-', (y_nan == 0).sum(), 'unknown-', np.isnan(y_nan).sum())
+
 print(train_df.head())
