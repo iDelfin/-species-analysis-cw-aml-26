@@ -28,7 +28,7 @@ def near_land(lat, lon, step=.25): # .25 d- about 28km N-S
             near |= globe.is_land(clip_lat, clip_long)
     return near
 
-# Remove sightings- about 25km from land
+# Remove ocean sightings- about 25km from land
 df = df[near_land(df['lat'].values, df['lon'].values)].copy()
 print('Total after removing ocean sightings-', len(df))
 
