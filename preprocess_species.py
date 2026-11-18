@@ -31,6 +31,8 @@ def near_land(lat, lon, step=.25): # .25 d- about 28km N-S
 # Remove ocean sightings- about 25km from land
 df = df[near_land(df['lat'].values, df['lon'].values)].copy()
 print('Total after removing ocean sightings-', len(df))
+land_cells = np.flatnonzero(near_land(grid[:, 0], grid[:, 1]))
+print('Land cells-', len(land_cells))
 
 # Bin- find the H3 cell each sighting falls in
 df['cell'] = [cell_index[h3.latlng_to_cell(lat, lon, res)] for lat, lon in zip(df['lat'], df['lon'])]
@@ -44,7 +46,7 @@ print('Presences after binning-', len(presences))
 rng = np.random.default_rng(SEED)
 absences = []
 for species, group in presences.groupby('species'):
-    candidates = np.setdiff1d(np.arange(len(grid)), group['cell']) # Pseudo-absences in cells where presences are not there
+    candidates = np.setdiff1d(land_cells, group['cell']) # Pseudo-absences in cells where presences are not there
     picked = rng.choice(candidates, len(group)*Abs_per_presence, replace=False)
     absences.append(pd.DataFrame({'cell': picked, 'species': species, 'present': 0, 'n_sightings': 0}))
 
