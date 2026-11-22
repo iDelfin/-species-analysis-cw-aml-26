@@ -23,3 +23,11 @@ for i, pos in enumerate(test['test_pos_inds']):
     y_test[pos, i] = 1  # species i present at these locations, 0 elsewhere
 
 print('X_test-', X_test.shape, ', y_test-', y_test.shape, ', cell_test-', cell_test.shape)
+
+# Save
+np.savez('species/preprocessed_test.npz', X_test=X_test, y_test=y_test, cell_test=cell_test, test_locs=test['test_locs'], taxon_ids=test['taxon_ids'])
+
+# Usage for models
+preprocessed = np.load('species/preprocessed_test.npz')
+X_test = preprocessed['X_test']
+y_test = preprocessed['y_test']
