@@ -5,11 +5,7 @@ import h3
 
 SEED=0
 res=4
-<<<<<<< HEAD
-Background_per_cell=1
-=======
 Abs_per_presence=1
->>>>>>> origin/main
 
 # Load training data
 train = np.load('species/species_train.npz')
@@ -32,17 +28,11 @@ def near_land(lat, lon, step=.25): # .25 d- about 28km N-S
             near |= globe.is_land(clip_lat, clip_long)
     return near
 
-<<<<<<< HEAD
-# Remove sightings- about 25km from land
-df = df[near_land(df['lat'].values, df['lon'].values)].copy()
-print('Total after removing ocean sightings-', len(df))
-=======
 # Remove ocean sightings- about 25km from land
 df = df[near_land(df['lat'].values, df['lon'].values)].copy()
 print('Total after removing ocean sightings-', len(df))
 land_cells = np.flatnonzero(near_land(grid[:, 0], grid[:, 1]))
 print('Land cells-', len(land_cells))
->>>>>>> origin/main
 
 # Bin- find the H3 cell each sighting falls in
 df['cell'] = [cell_index[h3.latlng_to_cell(lat, lon, res)] for lat, lon in zip(df['lat'], df['lon'])]
@@ -56,17 +46,6 @@ presences = df.groupby('cell')['index'].unique().apply(sorted).reset_index(name=
 presences['n_sightings'] = df.groupby('cell').size().values
 print('Cells with sightings-', len(presences))
 
-<<<<<<< HEAD
-# Pseudo-absences- random empty cells (no species seen), empty species list
-rng = np.random.default_rng(SEED)
-candidates = np.setdiff1d(np.arange(len(grid)), presences['cell']) # cells where no species was seen
-picked = rng.choice(candidates, len(presences)*Background_per_cell, replace=False)
-absences = pd.DataFrame({'cell': picked, 'species': [[] for _ in picked], 'n_sightings': 0})
-
-data = pd.concat([presences, absences], ignore_index=True)
-data['n_species'] = data['species'].apply(len)
-print('Background cells-', len(absences))
-=======
 # Pseudo-absences- per species
 rng = np.random.default_rng(SEED)
 pairs = df[['cell', 'species']].drop_duplicates()  # one row per (cell, species) presence
@@ -88,7 +67,6 @@ data = pd.concat([presences, absences], ignore_index=True)
 data['absent'] = [a if type(a) == list else [] for a in data['absent']]
 data['n_species'] = data['species'].apply(len)
 print('Pseudo-absences-', len(absent_cells)) # Number of pseudo absences
->>>>>>> origin/main
 
 # Taxonomy class for species
 taxonomy = pd.read_csv('species/species_taxonomy.csv')
@@ -116,17 +94,12 @@ y_train = np.zeros((len(data), len(species_index)), dtype=bool) # 1=species pres
 for row, species in enumerate(data['species']):
     y_train[row, species] = 1
 
-<<<<<<< HEAD
-# Save
-np.savez('species/preprocessed_cells.npz', X_train=X_train, y_train=y_train, class_id=class_id, n_sightings=data['n_sightings'].values, n_species=data['n_species'].values, cell_train=data['cell'].values, grid_latlon=grid, grid_cells=np.array(grid_cells), res=res, taxon_ids=train['taxon_ids'])
-=======
 absent_train = np.zeros((len(data), len(species_index)), dtype=bool)
 for row, absent in enumerate(data['absent']):
     absent_train[row, absent] = 1
 
 # Save
 np.savez('species/preprocessed_cells.npz', X_train=X_train, y_train=y_train, absent_train=absent_train, class_id=class_id, n_sightings=data['n_sightings'].values, n_species=data['n_species'].values, cell_train=data['cell'].values, grid_latlon=grid, grid_cells=np.array(grid_cells), res=res, taxon_ids=train['taxon_ids'])
->>>>>>> origin/main
 print('X_train-', X_train.shape, ', y_train-', y_train.shape)
 
 # Usage for models
@@ -143,14 +116,7 @@ y = preprocessed['y_train'].astype(np.float32) # for NN, 0/1 col for each grid c
 
 # NaN 1=present, 0=absent, NaN=unknown 
 y_nan = y.copy()
-<<<<<<< HEAD
-observed = preprocessed['n_species'] > 0 # sightings
-rows = y_nan[observed]
-rows[rows==0] = np.nan
-y_nan[observed] = rows
-=======
 y_nan[(y_nan == 0) & ~preprocessed['absent_train']] = np.nan
->>>>>>> origin/main
 print('present-', (y_nan == 1).sum(), 'absent-', (y_nan == 0).sum(), 'unknown-', np.isnan(y_nan).sum())
 
 print(train_df.head())

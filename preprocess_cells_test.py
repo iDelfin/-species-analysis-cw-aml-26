@@ -1,5 +1,6 @@
 import numpy as np
 import h3
+import pandas as pd
 
 test = np.load('species/species_test.npz', allow_pickle=True)
 
@@ -25,9 +26,18 @@ for i, pos in enumerate(test['test_pos_inds']):
 print('X_test-', X_test.shape, ', y_test-', y_test.shape, ', cell_test-', cell_test.shape)
 
 # Save
-np.savez('species/preprocessed_test.npz', X_test=X_test, y_test=y_test, cell_test=cell_test, test_locs=test['test_locs'], taxon_ids=test['taxon_ids'])
+np.savez('species/preprocessed_cells_test.npz', X_test=X_test, y_test=y_test, cell_test=cell_test, test_locs=test['test_locs'], taxon_ids=test['taxon_ids'])
 
 # Usage for models
-preprocessed = np.load('species/preprocessed_test.npz')
-X_test = preprocessed['X_test']
-y_test = preprocessed['y_test']
+preprocessed = np.load('species/preprocessed_cells_test.npz')
+cols = ['sin_lon', 'cos_lon', 'sin_lat', 'cos_lat']
+test_df = pd.DataFrame(preprocessed['X_test'], columns=cols)
+test_df['cell'] = preprocessed['cell_test']
+test_df['n_species'] = preprocessed['y_test'].sum(axis=1)  # number of species present at each point
+test_df['species'] = [np.flatnonzero(row) for row in preprocessed['y_test']]
+
+X = preprocessed['X_test']
+y = preprocessed['y_test'].astype(np.float32)  # for NN, 0/1 for each test point for all 500 species
+
+print(test_df.head())
+
