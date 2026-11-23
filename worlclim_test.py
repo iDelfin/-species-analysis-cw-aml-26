@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 
 # Load the climate grid
-env_grid = np.load('bioclim_h3_res4.npz')['env_grid']
+env_grid = np.load('climate/bioclim_h3_res4.npz')['env_grid']
 
 # Load the preprocessed test cells
-preprocessed_test = np.load('species/preprocessed_test.npz')
+preprocessed_test = np.load('species/preprocessed_cells_test.npz')
 X_test = preprocessed_test['X_test']
 y_test = preprocessed_test['y_test']
 cell_test = preprocessed_test['cell_test']
@@ -42,5 +42,5 @@ y_test_bio = y_test[clean_test]
 cell_test_bio = cell_test[clean_test]
 
 # Save
-np.savez('preprocessed_test_bio.npz', X_test=X_test_bio, y_test=y_test_bio, cell_test=cell_test_bio)
+np.savez('climate/preprocessed_test_bio.npz', X_test=X_test_bio, y_test=y_test_bio, cell_test=cell_test_bio)
 print('X_test_bio-', X_test_bio.shape, ', y_test_bio-', y_test_bio.shape)

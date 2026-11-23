@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 # Load the climate grid
-env_grid = np.load('bioclim_h3_res4.npz')['env_grid']
+env_grid = np.load('climate/bioclim_h3_res4.npz')['env_grid']
 
 cols = ['sin_lon', 'cos_lon', 'sin_lat', 'cos_lat']
 
@@ -16,7 +16,7 @@ env_cols = ['Annual Mean Temperature',
             'Elevation']
 
 # Load the preprocessed species data
-preprocessed_species = np.load('preprocessed_species.npz')
+preprocessed_species = np.load('species/preprocessed_species.npz')
 
 # Make the train df from the preprocessed species data
 species_df_bio = pd.DataFrame(preprocessed_species['X_train'], columns=cols)
@@ -35,7 +35,7 @@ species_df_bio = species_df_bio[clean_species]
 X_species_bio = species_df_bio[cols + env_cols].values
 
 # Save
-np.savez('preprocessed_species_bio.npz',
+np.savez('climate/preprocessed_species_bio.npz',
          id=preprocessed_species['id'][clean_species],
          X_train=X_species_bio,
          y_train=preprocessed_species['y_train'][clean_species],

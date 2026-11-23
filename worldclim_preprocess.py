@@ -24,7 +24,7 @@ def encode(latlon):
 
 def convert_tif_to_lonlat(file_name, bio_clim):
     
-    data = rasterio.open(f"wc2.1_10m_bio/{file_name}")
+    data = rasterio.open(f"climate/wc2.1_10m_bio/{file_name}")
 
     band1 = data.read(1)
     
@@ -114,7 +114,7 @@ bioclim_h3 = data_bioclim.groupby('cell')[col_names].mean()
 # One row per grid cell, same order as grid (NaN = no climate data)
 env_grid = bioclim_h3.reindex(np.arange(len(grid))).values
 
-np.savez('bioclim_h3_res4.npz',
+np.savez('climate/bioclim_h3_res4.npz',
          env_grid=env_grid,
          grid_cells=np.array(grid_cells),
          env_names=np.array(col_names),
@@ -159,5 +159,5 @@ y_train_bio = y_train[clean_bio]
 absent_train_bio = absent_train[clean_bio]
 
 # Save
-np.savez('preprocessed_cells_bio.npz', X_train=X_train_bio, y_train=y_train_bio, absent_train=absent_train_bio)
+np.savez('climate/preprocessed_cells_bio.npz', X_train=X_train_bio, y_train=y_train_bio, absent_train=absent_train_bio)
 print('X_train_bio-', X_train_bio.shape, ', y_train_bio-', y_train_bio.shape)
