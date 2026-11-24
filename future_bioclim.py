@@ -57,7 +57,7 @@ hist_mu = stats['mu']
 hist_sigma = stats['sigma']
 
 # Load all selected bioclim data
-future_file = 'wc2.1_10m_bioc_MPI-ESM1-2-HR_ssp245_2041-2060.tif'
+future_file = 'climate/future/wc2.1_10m_bioc_MPI-ESM1-2-HR_ssp245_2041-2060.tif'
 
 future_data_bio_1  = convert_future_tif_to_lonlat(future_file, 'Future Annual Mean Temperature', 1)
 future_data_bio_4  = convert_future_tif_to_lonlat(future_file, 'Future Temperature Seasonality', 4)
@@ -68,7 +68,7 @@ future_data_bio_15 = convert_future_tif_to_lonlat(future_file, 'Future Precipita
 future_data_bio_17 = convert_future_tif_to_lonlat(future_file, 'Future Precipitation of Driest Quarter', 17)
 
 # use same elevation as before because it does not change
-elev_data = convert_future_tif_to_lonlat('wc2.1_10m_bio/wc2.1_10m_elev.tif', 'Elevation', 1)
+elev_data = convert_future_tif_to_lonlat('climate/wc2.1_10m_bio/wc2.1_10m_elev.tif', 'Elevation', 1)
 
 
 # Column names
@@ -124,7 +124,7 @@ future_bioclim_h3 = future_data_bioclim.groupby('cell')[future_col_names].mean()
 # One row per grid cell, same order as grid (NaN = no climate data)
 future_env_grid = future_bioclim_h3.reindex(np.arange(len(grid))).values
 
-np.savez('future_bioclim_h3_res4.npz',
+np.savez('climate/future_bioclim_h3_res4.npz',
          future_env_grid=future_env_grid,
          grid_cells=np.array(grid_cells),
          future_env_names=np.array(future_col_names),
@@ -134,7 +134,7 @@ print(future_env_grid)
 
 ### LINK WITH THE TEST DATA #####
 # Load the preprocessed test cells
-preprocessed_test = np.load('species/preprocessed_test.npz')
+preprocessed_test = np.load('species/preprocessed_cells_test.npz')
 X_test = preprocessed_test['X_test']
 y_test = preprocessed_test['y_test']
 cell_test = preprocessed_test['cell_test']
@@ -156,7 +156,7 @@ future_col_names = ['Future Annual Mean Temperature',
                     'Elevation']
 
 # Load the future climate grid
-future_env_grid = np.load('future_bioclim_h3_res4.npz')['future_env_grid']
+future_env_grid = np.load('climate/future_bioclim_h3_res4.npz')['future_env_grid']
 
 # Make the test df from the preprocessed test cells
 test_df_future = pd.DataFrame(X_test, columns=cols)
@@ -174,5 +174,5 @@ y_test_future = y_test[clean_future]
 cell_test_future = cell_test[clean_future]
 
 # Save
-np.savez('preprocessed_test_future.npz', X_test=X_test_future, y_test=y_test_future, cell_test=cell_test_future)
+np.savez('climate/future/preprocessed_test_future.npz', X_test=X_test_future, y_test=y_test_future, cell_test=cell_test_future)
 print('X_test_future-', X_test_future.shape, ', y_test_future-', y_test_future.shape)
