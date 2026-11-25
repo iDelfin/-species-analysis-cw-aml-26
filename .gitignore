@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Ensemble files
+ensemble_results/
+future_ensemble_results/
