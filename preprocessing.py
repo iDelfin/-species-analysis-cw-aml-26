@@ -514,7 +514,7 @@ for i in range(len(col_names)):
     hist_sigma.append(sigma)
     data_bioclim[col] = (data_bioclim[col] - mu) / sigma
 
-np.savez('bioclim_norm_stats.npz', mu=np.array(hist_mu), sigma=np.array(hist_sigma), env_names=np.array(col_names))
+np.savez('climate/bioclim_norm_stats.npz', mu=np.array(hist_mu), sigma=np.array(hist_sigma), env_names=np.array(col_names))
 
 res = 4
 
@@ -736,7 +736,7 @@ def convert_future_tif_to_lonlat(file_name, bio_clim, index):
 
 
 # Historical mean and std (saved by the historical WorldClim script)
-stats = np.load('bioclim_norm_stats.npz')
+stats = np.load('climate/bioclim_norm_stats.npz')
 hist_mu = stats['mu']
 hist_sigma = stats['sigma']
 
@@ -858,5 +858,5 @@ y_test_future = y_test[clean_future]
 cell_test_future = cell_test[clean_future]
 
 # Save
-np.savez('climate/future/preprocessed_test_future.npz', X_test=X_test_future, y_test=y_test_future, cell_test=cell_test_future)
+np.savez('climate/preprocessed_test_future.npz', X_test=X_test_future, y_test=y_test_future, cell_test=cell_test_future)
 print('X_test_future-', X_test_future.shape, ', y_test_future-', y_test_future.shape)
