@@ -166,7 +166,6 @@ train_df = pd.DataFrame(preprocessed['X_train'], columns=cols)
 train_df['cell'] = preprocessed['cell_train']
 train_df['n_species'] = preprocessed['n_species']
 train_df['sightings'] = preprocessed['n_sightings']
-train_df['species'] = [np.flatnonzero(row) for row in preprocessed['y_train']] # list view
 
 X = preprocessed['X_train']
 y = preprocessed['y_train'].astype(np.float32) # for NN, 0/1 col for each grid cell for all 500 species
