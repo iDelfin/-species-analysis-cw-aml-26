@@ -156,7 +156,7 @@ for row, absent in enumerate(data['absent']):
     absent_train[row, absent] = 1
 
 # Save
-np.savez('species/preprocessed_cells.npz', X_train=X_train, y_train=y_train, absent_train=absent_train, class_id=class_id, n_sightings=data['n_sightings'].values, n_species=data['n_species'].values, cell_train=data['cell'].values, grid_latlon=grid, grid_cells=np.array(grid_cells), res=res, taxon_ids=train['taxon_ids'])
+np.savez('species/preprocessed_cells.npz', X_train=X_train, y_train=y_train, absent_train=absent_train, class_id=class_id, n_sightings=data['n_sightings'].to_numpy(), n_species=data['n_species'].to_numpy(), cell_train=data['cell'].to_numpy(dtype=np.int64), grid_latlon=grid, grid_cells=np.array(grid_cells), res=res, taxon_ids=train['taxon_ids'])
 print('X_train-', X_train.shape, ', y_train-', y_train.shape)
 
 # Usage for models
