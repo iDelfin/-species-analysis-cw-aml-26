@@ -60,11 +60,6 @@ print(df['class'].value_counts(dropna=False))
 
 
 
-import numpy as np
-import pandas as pd
-from global_land_mask import globe
-import h3
-
 SEED=0
 res=4
 Abs_per_presence=1
@@ -205,15 +200,6 @@ print('Grid cells-', len(grid))
 df = pd.DataFrame({'lat': train['train_locs'][:, 0], 'lon': train['train_locs'][:, 1], 'species': train['train_ids'],})
 print('Sightings-', len(df))
 
-def near_land(lat, lon, step=.25): # .25 d- about 28km N-S
-    near = np.zeros(len(lat), dtype=bool)
-    for dlat in (-step, 0, step):
-        for dlon in (-step, 0, step):
-            clip_lat = np.clip(lat+dlat,-90,90)
-            clip_long = np.clip(lon+dlon,-180,180)
-            near |= globe.is_land(clip_lat, clip_long)
-    return near
-
 # Remove ocean sightings- about 25km from land
 df = df[near_land(df['lat'].values, df['lon'].values)].copy()
 print('Total after removing ocean sightings-', len(df))
@@ -256,12 +242,6 @@ for i, c in enumerate(class_names):
     class_index[c] = i
 data['class_id'] = data['class'].map(class_index)
 
-# Features- normalise lat/lon to [-1,1], then sin/cos (SINR paper approach)
-def encode(latlon):
-    lat = latlon[:,0]/90
-    lon = latlon[:,1]/180
-    return np.column_stack([np.sin(np.pi*lon), np.cos(np.pi*lon), np.sin(np.pi*lat), np.cos(np.pi*lat)])
-
 X_train = encode(grid[data['cell']])
 y_train = data['present'].values
 species_train = data['species'].values
@@ -291,17 +271,7 @@ print(train_df.head())
 
 
 
-import numpy as np
-import h3
-import pandas as pd
-
 test = np.load('species/species_test.npz', allow_pickle=True)
-
-# Features- normalise lat/lon to [-1,1], then sin/cos (SINR paper approach)
-def encode(latlon):
-    lat = latlon[:,0]/90
-    lon = latlon[:,1]/180
-    return np.column_stack([np.sin(np.pi*lon), np.cos(np.pi*lon), np.sin(np.pi*lat), np.cos(np.pi*lat)])
 
 res = 4
 grid_cells = [c for r0 in h3.get_res0_cells() for c in h3.cell_to_children(r0, res)]
@@ -339,10 +309,6 @@ print(test_df.head())
 """preprocess_species_test.py"""
 
 
-
-import numpy as np
-import pandas as pd
-import h3
 
 res=4
 
@@ -383,12 +349,6 @@ for i, c in enumerate(class_names):
     class_index[c] = i
 data['class_id'] = data['class'].map(class_index)
 
-# Features- normalise lat/lon to [-1,1], then sin/cos (SINR paper approach)
-def encode(latlon):
-    lat = latlon[:,0]/90
-    lon = latlon[:,1]/180
-    return np.column_stack([np.sin(np.pi*lon), np.cos(np.pi*lon), np.sin(np.pi*lat), np.cos(np.pi*lat)])
-
 X_test = encode(test['test_locs'][data['point']])
 y_test = data['present'].values
 species_test = data['species'].values
@@ -417,21 +377,6 @@ print(test_df.head())
 """worldclim_cells.py"""
 
 
-
-def near_land(lat, lon, step=.25): # .25 d- about 28km N-S
-    near = np.zeros(len(lat), dtype=bool)
-    for dlat in (-step, 0, step):
-        for dlon in (-step, 0, step):
-            clip_lat = np.clip(lat+dlat,-90,90)
-            clip_long = np.clip(lon+dlon,-180,180)
-            near |= globe.is_land(clip_lat, clip_long)
-    return near
-
-# Features- normalise lat/lon to [-1,1], then sin/cos (SINR paper approach)
-def encode(latlon):
-    lat = latlon[:,0]/90
-    lon = latlon[:,1]/180
-    return np.column_stack([np.sin(np.pi*lon), np.cos(np.pi*lon), np.sin(np.pi*lat), np.cos(np.pi*lat)])
 
 def convert_tif_to_lonlat(file_name, bio_clim):
 
@@ -689,22 +634,6 @@ print('X_test_bio-', X_test_bio.shape, ', y_test_bio-', y_test_bio.shape)
 
 """future_bioclim.py"""
 
-
-
-def near_land(lat, lon, step=.25): # .25 d- about 28km N-S
-    near = np.zeros(len(lat), dtype=bool)
-    for dlat in (-step, 0, step):
-        for dlon in (-step, 0, step):
-            clip_lat = np.clip(lat+dlat,-90,90)
-            clip_long = np.clip(lon+dlon,-180,180)
-            near |= globe.is_land(clip_lat, clip_long)
-    return near
-
-# Features- normalise lat/lon to [-1,1], then sin/cos (SINR paper approach)
-def encode(latlon):
-    lat = latlon[:,0]/90
-    lon = latlon[:,1]/180
-    return np.column_stack([np.sin(np.pi*lon), np.cos(np.pi*lon), np.sin(np.pi*lat), np.cos(np.pi*lat)])
 
 
 def convert_future_tif_to_lonlat(file_name, bio_clim, index):
